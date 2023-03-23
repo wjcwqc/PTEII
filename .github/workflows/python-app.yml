@@ -15,19 +15,34 @@ permissions:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
     steps:
+
+    # Check-out repository
     - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+
+    # Setup Python
+    - uses: actions/setup-python@v4
       with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Build EXE from Python Script
-      uses: Nuitka/Nuitka-Action@v0.5
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+
+    # Build python script into a stand-alone exe
+    - uses: Nuitka/Nuitka-Action@main
+      with:
+        nuitka-version: main
+        script-name: app.py
+        onefile: true
+    # Uploads artifact
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: exe
+        path: build/app.exe
+#     - name: Install dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         pip install flake8 pytest
+#         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      
 
